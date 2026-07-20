@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+<title>解答之書 · Book of Answers</title>
+<meta name="description" content="心中默想問題，翻開書頁得到你的解答。" />
+<meta name="theme-color" content="#171310" />
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="icons/icon-192.png" />
+<link rel="apple-touch-icon" href="icons/icon-180.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <div class="stage">
+
+    <header class="topbar">
+      <button id="langBtn" class="lang-btn" type="button" aria-label="switch language">
+        <span id="langLabel">中</span>
+      </button>
+    </header>
+
+    <main class="scene" id="scene">
+
+      <!-- COVER -->
+      <section class="book cover-state" id="book" aria-live="polite">
+        <div class="book-cover" id="bookCover" role="button" tabindex="0" aria-label="輕點開啟解答之書">
+          <div class="cover-frame">
+            <div class="cover-emblem">?</div>
+            <h1 class="cover-title" id="coverTitle">解答之書</h1>
+            <div class="cover-line"></div>
+          </div>
+          <div class="spine"></div>
+        </div>
+
+        <p class="hint" id="coverHint">心中默想你的問題，<br/>輕點書本開啟解答。</p>
+
+        <!-- PAGE (revealed answer) -->
+        <div class="page" id="page" hidden>
+          <p class="page-answer" id="answerText"></p>
+          <div class="page-foot">
+            <span class="page-mark">◆</span>
+          </div>
+        </div>
+
+        <div class="actions" id="actions" hidden>
+          <button id="againBtn" class="btn btn-ghost" type="button">再翻一次</button>
+          <button id="closeBtn" class="btn btn-quiet" type="button">闔上書本</button>
+        </div>
+
+      </section>
+
+    </main>
+
+    <div class="install-toast" id="installToast" hidden>
+      <p id="installBody">安裝成 App，即使離線也能秒開使用。</p>
+      <div class="install-actions">
+        <button id="installLater" class="btn btn-quiet" type="button">先不要</button>
+        <button id="installConfirm" class="btn btn-ghost" type="button">安裝</button>
+      </div>
+    </div>
+
+  </div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
