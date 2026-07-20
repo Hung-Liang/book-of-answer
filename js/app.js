@@ -25,12 +25,17 @@
     installBody: document.getElementById("installBody"),
     installLater: document.getElementById("installLater"),
     installConfirm: document.getElementById("installConfirm"),
+    loadError: document.getElementById("loadError"),
+    loadErrorText: document.getElementById("loadErrorText"),
+    retryBtn: document.getElementById("retryBtn"),
   };
 
   const cache = {};      // locale code -> parsed json
   let localeCode = pickInitialLocale();
   let currentIndex = -1; // index into answers[], kept stable across language switches
   let isOpen = false;
+  let isReady = false;
+  let retryLocaleCode = localeCode;
 
   function pickInitialLocale() {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -49,7 +54,11 @@
   async function loadLocale(code) {
     if (cache[code]) return cache[code];
     const res = await fetch(`locales/${code}.json`);
+    if (!res.ok) throw new Error(`Could not load locale ${code}: ${res.status}`);
     const data = await res.json();
+    if (!data?.meta?.lang || !data?.ui || !Array.isArray(data.answers) || data.answers.length === 0) {
+      throw new Error(`Locale ${code} has invalid data`);
+    }
     cache[code] = data;
     return data;
   }
@@ -64,7 +73,9 @@
     els.installBody.textContent = data.ui.installBody;
     els.installLater.textContent = data.ui.installLater;
     els.installConfirm.textContent = data.ui.installConfirm;
-    els.bookCover.setAttribute("aria-label", data.ui.title);
+    els.bookCover.setAttribute("aria-label", data.ui.coverHint.replace(/\n/g, " "));
+    els.langBtn.setAttribute("aria-label", data.ui.switchLanguage);
+    els.retryBtn.textContent = data.ui.retry;
     const localeMeta = LOCALES.find(l => l.code === data.meta.lang) || LOCALES.find(l => l.code === localeCode);
     els.langLabel.textContent = localeMeta ? localeMeta.label : "?";
   }
@@ -87,7 +98,7 @@
   }
 
   function openBook() {
-    if (isOpen) return;
+    if (!isReady || isOpen) return;
     isOpen = true;
     currentIndex = randomIndex(cache[localeCode].answers.length, -1);
     els.answerText.textContent = currentAnswerText();
@@ -120,14 +131,37 @@
   }
 
   async function setLocale(code) {
-    localeCode = code;
-    localStorage.setItem(STORAGE_KEY, code);
-    const data = await loadLocale(code);
-    renderStaticText(data);
-    if (isOpen && currentIndex >= 0) {
-      // keep the same answer "slot" but show it in the new language
-      els.answerText.textContent = currentAnswerText();
+    retryLocaleCode = code;
+    try {
+      const data = await loadLocale(code);
+      localeCode = code;
+      localStorage.setItem(STORAGE_KEY, code);
+      renderStaticText(data);
+      hideLoadError();
+      if (isOpen && currentIndex >= 0) {
+        // keep the same answer "slot" but show it in the new language
+        els.answerText.textContent = currentAnswerText();
+      }
+    } catch (error) {
+      showLoadError(error);
     }
+  }
+
+  function showLoadError(error) {
+    console.error(error);
+    const fallback = "Unable to load content. Please try again.";
+    const data = cache[localeCode];
+    els.loadErrorText.textContent = data?.ui?.loadError || fallback;
+    els.retryBtn.textContent = data?.ui?.retry || "Retry";
+    els.loadError.hidden = false;
+    els.bookCover.setAttribute("aria-disabled", "true");
+    isReady = false;
+  }
+
+  function hideLoadError() {
+    els.loadError.hidden = true;
+    els.bookCover.setAttribute("aria-disabled", "false");
+    isReady = true;
   }
 
   // ---- events ----
@@ -138,6 +172,7 @@
   els.againBtn.addEventListener("click", askAgain);
   els.closeBtn.addEventListener("click", closeBook);
   els.langBtn.addEventListener("click", () => setLocale(nextLocaleCode(localeCode)));
+  els.retryBtn.addEventListener("click", () => setLocale(retryLocaleCode));
 
   // ---- install prompt (Android/desktop Chrome-family only; iOS has no beforeinstallprompt) ----
   let deferredPrompt = null;
@@ -165,5 +200,7 @@
   }
 
   // ---- boot ----
-  loadLocale(localeCode).then(renderStaticText);
+  loadLocale(localeCode)
+    .then((data) => { renderStaticText(data); hideLoadError(); })
+    .catch(showLoadError);
 })();

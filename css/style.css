@@ -82,6 +82,12 @@ button:focus-visible, [tabindex]:focus-visible{
   align-items:center;
 }
 
+.book-cover[aria-disabled="true"]{
+  cursor: wait;
+  pointer-events: none;
+  opacity: 0.55;
+}
+
 /* ---------- COVER ---------- */
 .book-cover{
   position:relative;
@@ -284,6 +290,30 @@ button:focus-visible, [tabindex]:focus-visible{
 }
 .install-actions{ display:flex; gap:10px; }
 .install-actions .btn{ padding: 9px 14px; font-size:13px; }
+
+/* ---------- LOAD ERROR ---------- */
+.load-error{
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  width: min(84vw, 320px);
+  padding: 24px;
+  border: 1px solid rgba(184,147,63,0.4);
+  border-radius: var(--radius);
+  background: var(--ink-2);
+  box-shadow: 0 20px 40px -12px rgba(0,0,0,0.6);
+  text-align: center;
+  color: var(--parchment);
+  transform: translate(-50%, -50%);
+}
+.load-error p{
+  margin: 0 0 16px;
+  line-height: 1.6;
+}
+.load-error .btn{
+  width: 100%;
+}
 
 /* ---------- REDUCED MOTION ---------- */
 @media (prefers-reduced-motion: reduce){

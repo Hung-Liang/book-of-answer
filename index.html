@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>解答之書 · Book of Answers</title>
 <meta name="description" content="心中默想問題，翻開書頁得到你的解答。" />
 <meta name="theme-color" content="#171310" />
@@ -18,7 +18,7 @@
   <div class="stage">
 
     <header class="topbar">
-      <button id="langBtn" class="lang-btn" type="button" aria-label="switch language">
+      <button id="langBtn" class="lang-btn" type="button" aria-label="切換語言">
         <span id="langLabel">中</span>
       </button>
     </header>
@@ -26,8 +26,8 @@
     <main class="scene" id="scene">
 
       <!-- COVER -->
-      <section class="book cover-state" id="book" aria-live="polite">
-        <div class="book-cover" id="bookCover" role="button" tabindex="0" aria-label="輕點開啟解答之書">
+      <section class="book cover-state" id="book">
+        <div class="book-cover" id="bookCover" role="button" tabindex="0" aria-label="輕點開啟解答之書" aria-disabled="true">
           <div class="cover-frame">
             <div class="cover-emblem">?</div>
             <h1 class="cover-title" id="coverTitle">解答之書</h1>
@@ -40,7 +40,7 @@
 
         <!-- PAGE (revealed answer) -->
         <div class="page" id="page" hidden>
-          <p class="page-answer" id="answerText"></p>
+          <p class="page-answer" id="answerText" role="status" aria-live="polite" aria-atomic="true"></p>
           <div class="page-foot">
             <span class="page-mark">◆</span>
           </div>
@@ -52,6 +52,11 @@
         </div>
 
       </section>
+
+      <div class="load-error" id="loadError" role="alert" hidden>
+        <p id="loadErrorText"></p>
+        <button id="retryBtn" class="btn btn-ghost" type="button">重試</button>
+      </div>
 
     </main>
 

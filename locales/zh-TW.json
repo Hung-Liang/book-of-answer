@@ -13,7 +13,10 @@
     "installLater": "先不要",
     "installConfirm": "安裝",
     "offlineReady": "已可離線使用",
-    "langLabel": "語言"
+    "langLabel": "語言",
+    "switchLanguage": "切換語言",
+    "loadError": "無法載入內容，請檢查網路後再試一次。",
+    "retry": "重試"
   },
   "answers": [
     "是的，毫無疑問。",

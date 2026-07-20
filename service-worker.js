@@ -1,5 +1,4 @@
-// Bump this version string whenever you change any cached file to force an update.
-const CACHE_NAME = "boa-cache-v3";
+const CACHE_NAME = "boa-cache-v4";
 
 const APP_SHELL = [
   "./",
@@ -31,22 +30,30 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-// Cache-first for the app shell, falling back to network (and caching new fetches as they arrive).
+// Prefer fresh same-origin files so deployed changes reach returning users. Cached
+// responses are used only when the network is unavailable, keeping the app usable offline.
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
+  const url = new URL(event.request.url);
+  if (url.origin !== self.location.origin) return;
+
+  const networkResponse = fetch(event.request);
+  event.waitUntil(
+    networkResponse
+      .then((response) => {
+        if (response && response.status === 200 && response.type === "basic") {
+          return caches.open(CACHE_NAME).then((cache) => cache.put(event.request, response.clone()));
+        }
+      })
+      .catch(() => {})
+  );
 
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request)
-        .then((response) => {
-          if (response && response.status === 200 && response.type === "basic") {
-            const copy = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
-          }
-          return response;
-        })
-        .catch(() => cached);
-    })
+    networkResponse
+      .catch(() => caches.match(event.request).then((cached) => {
+        if (cached) return cached;
+        if (event.request.mode === "navigate") return caches.match("./index.html");
+        return Response.error();
+      }))
   );
 });

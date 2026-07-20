@@ -13,7 +13,10 @@
     "installLater": "後で",
     "installConfirm": "インストール",
     "offlineReady": "オフラインで利用可能",
-    "langLabel": "言語"
+    "langLabel": "言語",
+    "switchLanguage": "言語を切り替える",
+    "loadError": "コンテンツを読み込めません。接続を確認して、もう一度お試しください。",
+    "retry": "再試行"
   },
   "answers": [
     "はい、疑いようがありません。",
