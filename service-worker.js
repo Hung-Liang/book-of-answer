@@ -1,5 +1,10 @@
 const CACHE_NAME = "boa-cache-v4";
 const NETWORK_TIMEOUT_MS = 3000;
+// Pages whose navigation timed out and was served from cache. Their later requests
+// (CSS, JS, locale JSON) go to cache right away instead of each waiting out the timeout
+// in turn, which would add up to several timeouts along the HTML -> JS -> JSON chain.
+// shortcut: in-memory only, lost if the browser stops the worker; requests then fall back to the per-request timeout.
+const slowClients = new Set();
 
 const APP_SHELL = [
   "./",
@@ -56,8 +61,14 @@ self.addEventListener("fetch", (event) => {
     if (cached) return cached;
     if (event.request.mode === "navigate") return caches.match("./index.html");
   });
-  const timeout = new Promise((resolve) => setTimeout(resolve, NETWORK_TIMEOUT_MS))
-    .then(() => fromCache().then((cached) => cached || networkResponse));
+  // Navigations always get the full timeout: on reload Chrome reports the old page as clientId.
+  const wait = event.request.mode !== "navigate" && slowClients.has(event.clientId) ? 0 : NETWORK_TIMEOUT_MS;
+  const timeout = new Promise((resolve) => setTimeout(resolve, wait))
+    .then(() => fromCache().then((cached) => {
+      if (!cached) return networkResponse;
+      if (event.request.mode === "navigate" && event.resultingClientId) slowClients.add(event.resultingClientId);
+      return cached;
+    }));
 
   event.respondWith(
     Promise.race([networkResponse, timeout])
