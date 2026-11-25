@@ -174,10 +174,11 @@ button:focus-visible, [tabindex]:focus-visible{
 .book.is-open .hint{ display:none; }
 
 /* ---------- PAGE ---------- */
-/* .page/.actions set their own `display`, which otherwise overrides the
+/* .page/.actions/.load-error set their own `display`, which otherwise overrides the
    browser's built-in [hidden]{display:none} rule at equal specificity. */
 .page[hidden],
-.actions[hidden]{
+.actions[hidden],
+.load-error[hidden]{
   display: none !important;
 }
 
@@ -293,27 +294,34 @@ button:focus-visible, [tabindex]:focus-visible{
 .install-actions .btn{ padding: 9px 14px; font-size:13px; }
 
 /* ---------- LOAD ERROR ---------- */
+/* Bottom bar like .install-toast so it never covers the book, which stays usable
+   when a language switch fails. */
 .load-error{
   position: fixed;
-  top: 50%;
-  left: 50%;
+  left: 16px; right: 16px; bottom: 20px;
   z-index: 2;
-  width: min(84vw, 320px);
-  padding: 24px;
+  max-width: 420px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
   border: 1px solid rgba(184,147,63,0.4);
-  border-radius: var(--radius);
+  border-radius: 14px;
   background: var(--ink-2);
   box-shadow: 0 20px 40px -12px rgba(0,0,0,0.6);
-  text-align: center;
   color: var(--parchment);
-  transform: translate(-50%, -50%);
 }
 .load-error p{
-  margin: 0 0 16px;
-  line-height: 1.6;
+  flex: 1;
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
 }
 .load-error .btn{
-  width: 100%;
+  flex: none;
+  padding: 9px 14px;
+  font-size: 13px;
 }
 
 /* ---------- REDUCED MOTION ---------- */
