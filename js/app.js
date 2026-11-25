@@ -38,7 +38,12 @@
   let retryLocaleCode = localeCode;
 
   function pickInitialLocale() {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    let saved = null;
+    try {
+      saved = localStorage.getItem(STORAGE_KEY);
+    } catch {
+      // expected when storage is blocked by user settings; fall back to navigator.language
+    }
     if (saved && LOCALES.some(l => l.code === saved)) return saved;
     const nav = (navigator.language || "en").toLowerCase();
     if (nav.startsWith("zh")) return "zh-TW";
@@ -67,7 +72,7 @@
     document.documentElement.lang = data.meta.lang;
     document.title = `${data.meta.name}`;
     els.coverTitle.textContent = data.ui.title;
-    els.coverHint.innerHTML = escapeHtml(data.ui.coverHint).replace(/\n/g, "<br/>");
+    els.coverHint.textContent = data.ui.coverHint;
     els.againBtn.textContent = data.ui.askAgain;
     els.closeBtn.textContent = data.ui.close;
     els.installBody.textContent = data.ui.installBody;
@@ -76,12 +81,7 @@
     els.bookCover.setAttribute("aria-label", data.ui.coverHint.replace(/\n/g, " "));
     els.langBtn.setAttribute("aria-label", data.ui.switchLanguage);
     els.retryBtn.textContent = data.ui.retry;
-    const localeMeta = LOCALES.find(l => l.code === data.meta.lang) || LOCALES.find(l => l.code === localeCode);
-    els.langLabel.textContent = localeMeta ? localeMeta.label : "?";
-  }
-
-  function escapeHtml(str) {
-    return str.replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+    els.langLabel.textContent = LOCALES.find(l => l.code === localeCode).label;
   }
 
   function randomIndex(len, avoid) {
@@ -135,7 +135,11 @@
     try {
       const data = await loadLocale(code);
       localeCode = code;
-      localStorage.setItem(STORAGE_KEY, code);
+      try {
+        localStorage.setItem(STORAGE_KEY, code);
+      } catch {
+        // expected when storage is blocked by user settings; the switch still applies, just isn't remembered
+      }
       renderStaticText(data);
       hideLoadError();
       if (isOpen && currentIndex >= 0) {
@@ -154,8 +158,11 @@
     els.loadErrorText.textContent = data?.ui?.loadError || fallback;
     els.retryBtn.textContent = data?.ui?.retry || "Retry";
     els.loadError.hidden = false;
-    els.bookCover.setAttribute("aria-disabled", "true");
-    isReady = false;
+    // keep the already-loaded locale usable; only disable when nothing is loaded
+    if (!cache[localeCode]) {
+      els.bookCover.setAttribute("aria-disabled", "true");
+      isReady = false;
+    }
   }
 
   function hideLoadError() {
