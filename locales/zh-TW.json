@@ -8,12 +8,9 @@
     "coverHint": "心中默想你的問題，\n輕點書本開啟解答。",
     "askAgain": "再翻一次",
     "close": "闔上書本",
-    "install": "加到主畫面",
     "installBody": "安裝成 App，即使離線也能秒開使用。",
     "installLater": "先不要",
     "installConfirm": "安裝",
-    "offlineReady": "已可離線使用",
-    "langLabel": "語言",
     "switchLanguage": "切換語言",
     "loadError": "無法載入內容，請檢查網路後再試一次。",
     "retry": "重試"

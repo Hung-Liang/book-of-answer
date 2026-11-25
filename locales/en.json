@@ -8,12 +8,9 @@
     "coverHint": "Hold your question in mind.\nTap the book to open it.",
     "askAgain": "Ask Again",
     "close": "Close the Book",
-    "install": "Add to Home Screen",
     "installBody": "Install this as an app so it opens instantly, even offline.",
     "installLater": "Not now",
     "installConfirm": "Install",
-    "offlineReady": "Ready to use offline",
-    "langLabel": "Language",
     "switchLanguage": "Switch language",
     "loadError": "Unable to load content. Check your connection and try again.",
     "retry": "Retry"

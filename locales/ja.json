@@ -8,12 +8,9 @@
     "coverHint": "心に問いを思い浮かべて、\n本をタップして開きましょう。",
     "askAgain": "もう一度めくる",
     "close": "本を閉じる",
-    "install": "ホーム画面に追加",
     "installBody": "アプリとしてインストールすると、オフラインでもすぐに開けます。",
     "installLater": "後で",
     "installConfirm": "インストール",
-    "offlineReady": "オフラインで利用可能",
-    "langLabel": "言語",
     "switchLanguage": "言語を切り替える",
     "loadError": "コンテンツを読み込めません。接続を確認して、もう一度お試しください。",
     "retry": "再試行"
