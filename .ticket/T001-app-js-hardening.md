@@ -1,7 +1,7 @@
 ---
 id: T001
 title: app.js 健壯性修正與精簡
-status: todo
+status: done
 depends_on: []
 files:
   - js/app.js

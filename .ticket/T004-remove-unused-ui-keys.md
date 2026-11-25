@@ -1,7 +1,7 @@
 ---
 id: T004
 title: 刪除語系檔中未使用的 ui key
-status: todo
+status: done
 depends_on: []
 files:
   - locales/en.json

@@ -1,7 +1,7 @@
 ---
 id: T002
 title: Service Worker 網路請求加上逾時改用快取
-status: todo
+status: done
 depends_on: []
 files:
   - service-worker.js

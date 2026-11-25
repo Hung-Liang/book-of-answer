@@ -1,7 +1,7 @@
 ---
 id: T003
 title: 新增語系檔一致性檢查腳本
-status: todo
+status: done
 depends_on: []
 files:
   - scripts/check-locales.mjs
