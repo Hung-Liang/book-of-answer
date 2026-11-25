@@ -1,4 +1,5 @@
 const CACHE_NAME = "boa-cache-v4";
+const NETWORK_TIMEOUT_MS = 3000;
 
 const APP_SHELL = [
   "./",
@@ -32,6 +33,9 @@ self.addEventListener("activate", (event) => {
 
 // Prefer fresh same-origin files so deployed changes reach returning users. Cached
 // responses are used only when the network is unavailable, keeping the app usable offline.
+// If the network has not answered within NETWORK_TIMEOUT_MS, a cached copy is served instead;
+// without one we keep waiting for the network, so first visits are not cut off. A late network
+// response still updates the cache via waitUntil below.
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   const url = new URL(event.request.url);
@@ -48,12 +52,15 @@ self.addEventListener("fetch", (event) => {
       .catch(() => {})
   );
 
+  const fromCache = () => caches.match(event.request).then((cached) => {
+    if (cached) return cached;
+    if (event.request.mode === "navigate") return caches.match("./index.html");
+  });
+  const timeout = new Promise((resolve) => setTimeout(resolve, NETWORK_TIMEOUT_MS))
+    .then(() => fromCache().then((cached) => cached || networkResponse));
+
   event.respondWith(
-    networkResponse
-      .catch(() => caches.match(event.request).then((cached) => {
-        if (cached) return cached;
-        if (event.request.mode === "navigate") return caches.match("./index.html");
-        return Response.error();
-      }))
+    Promise.race([networkResponse, timeout])
+      .catch(() => fromCache().then((cached) => cached || Response.error()))
   );
 });
